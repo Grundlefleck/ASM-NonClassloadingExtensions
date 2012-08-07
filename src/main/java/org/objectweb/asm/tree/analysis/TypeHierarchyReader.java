@@ -28,21 +28,21 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.mutabilitydetector.asmoverride;
+package org.objectweb.asm.tree.analysis;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
-import static org.mutabilitydetector.asmoverride.TypeHierarchyReader.TypeHierarchy.BOOLEAN_HIERARCHY;
-import static org.mutabilitydetector.asmoverride.TypeHierarchyReader.TypeHierarchy.BYTE_HIERARCHY;
-import static org.mutabilitydetector.asmoverride.TypeHierarchyReader.TypeHierarchy.CHAR_HIERARCHY;
-import static org.mutabilitydetector.asmoverride.TypeHierarchyReader.TypeHierarchy.DOUBLE_HIERARCHY;
-import static org.mutabilitydetector.asmoverride.TypeHierarchyReader.TypeHierarchy.FLOAT_HIERARCHY;
-import static org.mutabilitydetector.asmoverride.TypeHierarchyReader.TypeHierarchy.INT_HIERARCHY;
-import static org.mutabilitydetector.asmoverride.TypeHierarchyReader.TypeHierarchy.LONG_HIERARCHY;
-import static org.mutabilitydetector.asmoverride.TypeHierarchyReader.TypeHierarchy.SHORT_HIERARCHY;
-import static org.mutabilitydetector.asmoverride.TypeHierarchyReader.TypeHierarchy.VOID_HIERARCHY;
 import static org.objectweb.asm.Opcodes.ACC_INTERFACE;
 import static org.objectweb.asm.Type.getType;
+import static org.objectweb.asm.tree.analysis.TypeHierarchyReader.TypeHierarchy.BOOLEAN_HIERARCHY;
+import static org.objectweb.asm.tree.analysis.TypeHierarchyReader.TypeHierarchy.BYTE_HIERARCHY;
+import static org.objectweb.asm.tree.analysis.TypeHierarchyReader.TypeHierarchy.CHAR_HIERARCHY;
+import static org.objectweb.asm.tree.analysis.TypeHierarchyReader.TypeHierarchy.DOUBLE_HIERARCHY;
+import static org.objectweb.asm.tree.analysis.TypeHierarchyReader.TypeHierarchy.FLOAT_HIERARCHY;
+import static org.objectweb.asm.tree.analysis.TypeHierarchyReader.TypeHierarchy.INT_HIERARCHY;
+import static org.objectweb.asm.tree.analysis.TypeHierarchyReader.TypeHierarchy.LONG_HIERARCHY;
+import static org.objectweb.asm.tree.analysis.TypeHierarchyReader.TypeHierarchy.SHORT_HIERARCHY;
+import static org.objectweb.asm.tree.analysis.TypeHierarchyReader.TypeHierarchy.VOID_HIERARCHY;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -28,16 +28,15 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.mutabilitydetector.asmoverride;
+package org.objectweb.asm.tree.analysis;
 
-import static org.mutabilitydetector.asmoverride.TypeHierarchyReader.TypeHierarchy.JAVA_LANG_OBJECT;
 import static org.objectweb.asm.Type.getType;
+import static org.objectweb.asm.tree.analysis.TypeHierarchyReader.TypeHierarchy.JAVA_LANG_OBJECT;
 
 import java.io.Serializable;
 
 import junit.framework.TestCase;
 
-import org.mutabilitydetector.asmoverride.TypeHierarchyReader;
 import org.objectweb.asm.Type;
 
 public class TypeHierarchyUnitTest extends TestCase {

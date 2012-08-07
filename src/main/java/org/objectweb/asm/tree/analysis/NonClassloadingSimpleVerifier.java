@@ -1,4 +1,3 @@
-package org.mutabilitydetector.asmoverride;
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
  * Copyright (c) 2000-2011 INRIA, France Telecom
@@ -29,10 +28,10 @@ package org.mutabilitydetector.asmoverride;
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+package org.objectweb.asm.tree.analysis;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.analysis.SimpleVerifier;
 
 /**
  * An extended {@link SimpleVerifier} that guarantees not to load classes.

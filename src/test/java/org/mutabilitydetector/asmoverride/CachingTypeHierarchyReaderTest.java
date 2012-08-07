@@ -11,10 +11,9 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.mutabilitydetector.asmoverride.CachingTypeHierarchyReader;
-import org.mutabilitydetector.asmoverride.TypeHierarchyReader;
-import org.mutabilitydetector.asmoverride.TypeHierarchyReader.TypeHierarchy;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.analysis.TypeHierarchyReader;
+import org.objectweb.asm.tree.analysis.TypeHierarchyReader.TypeHierarchy;
 
 public class CachingTypeHierarchyReaderTest extends TestCase {
 
