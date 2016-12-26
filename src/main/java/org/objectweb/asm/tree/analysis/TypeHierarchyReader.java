@@ -275,6 +275,10 @@ public class TypeHierarchyReader {
             return superType;
         }
 
+        public List<Type> getInterfaces() {
+            return interfaces;
+        }
+
         public boolean isAssignableFrom(
             TypeHierarchy u,
             TypeHierarchyReader typeHierarchyReader)
@@ -375,7 +379,7 @@ public class TypeHierarchyReader {
             return type().equals(u.getSuperType());
         }
 
-        private boolean hasSuperType() {
+        public boolean hasSuperType() {
             return getSuperType() != null
                     && !JAVA_LANG_OBJECT.representsType(getSuperType());
         }
