@@ -1,10 +1,10 @@
 package org.mutabilitydetector.asmoverride;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.analysis.TypeHierarchyReader;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class IsAssignableFromCachingTypeHierarchyReader extends TypeHierarchyReader {
 
@@ -41,20 +41,18 @@ public class IsAssignableFromCachingTypeHierarchyReader extends TypeHierarchyRea
     }
     
     private static class TypeAssignability {
-        public final Type toType, fromType;
-        private int hashCode;
+        private final Type toType, fromType;
+        private final int hashCode;
         
-        public TypeAssignability(Type toType, Type fromType) {
+        TypeAssignability(Type toType, Type fromType) {
             this.toType = toType;
             this.fromType = fromType;
             this.hashCode = calculateHashCode();
         }
 
         private int calculateHashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * fromType.hashCode();
-            result = prime * toType.hashCode();
+            int result = toType.hashCode();
+            result = 31 * result + fromType.hashCode();
             return result;
         }
 
