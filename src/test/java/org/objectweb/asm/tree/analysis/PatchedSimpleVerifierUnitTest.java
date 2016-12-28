@@ -38,11 +38,11 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.MethodNode;
 
 /**
- * SimpleVerifier unit tests.
+ * PatchedSimpleVerifier unit tests.
  *
  * @author Eric Bruneton
  */
-public class SimpleVerifierUnitTest extends TestCase implements Opcodes {
+public class PatchedSimpleVerifierUnitTest extends TestCase implements Opcodes {
 
     private Analyzer<?> a;
 
@@ -52,7 +52,7 @@ public class SimpleVerifierUnitTest extends TestCase implements Opcodes {
     protected void setUp() {
         Type c = Type.getType("LC;");
         Type d = Type.getType("Ljava/lang/Number;");
-        a = new Analyzer<BasicValue>(new SimpleVerifier(c, d, false));
+        a = new Analyzer<BasicValue>(new PatchedSimpleVerifier(c, d, false));
         mn = new MethodNode(ACC_PUBLIC, "m", "()V", null, null);
     }
 

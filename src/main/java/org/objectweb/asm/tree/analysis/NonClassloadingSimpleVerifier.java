@@ -34,7 +34,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
 
 /**
- * An extended {@link SimpleVerifier} that guarantees not to load classes.
+ * An extended {@link PatchedSimpleVerifier} that guarantees not to load classes.
  * 
  * Delegates to an underlying {@link TypeHierarchyReader} to perform the
  * necessary visiting of class files to find the information required for
@@ -49,7 +49,7 @@ import org.objectweb.asm.Type;
  * your environment.
  * 
  * @see ClassReader#ClassReader(String)
- * @see SimpleVerifier
+ * @see PatchedSimpleVerifier
  * @see Type
  * @see TypeHierarchyReader
  * 
@@ -117,7 +117,7 @@ public class NonClassloadingSimpleVerifier extends SimpleVerifier {
      * @see TypeHierarchyReader#isAssignableFrom(Type, Type)
      */
     @Override
-    protected boolean isAssignableFrom(Type toType, Type fromType) {
+    public boolean isAssignableFrom(Type toType, Type fromType) {
         return typeHierarchyReader.isAssignableFrom(toType, fromType);
     }
 }

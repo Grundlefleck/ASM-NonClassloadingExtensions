@@ -43,7 +43,7 @@ import org.objectweb.asm.Type;
  * @author Eric Bruneton
  * @author Bing Ran
  */
-public class SimpleVerifier extends BasicVerifier {
+public class PatchedSimpleVerifier extends BasicVerifier {
 
     /**
      * The class that is verified.
@@ -71,21 +71,21 @@ public class SimpleVerifier extends BasicVerifier {
     private ClassLoader loader = getClass().getClassLoader();
 
     /**
-     * Constructs a new {@link SimpleVerifier}.
+     * Constructs a new {@link PatchedSimpleVerifier}.
      */
-    public SimpleVerifier() {
+    public PatchedSimpleVerifier() {
         this(null, null, false);
     }
 
     /**
-     * Constructs a new {@link SimpleVerifier} to verify a specific class. This
+     * Constructs a new {@link PatchedSimpleVerifier} to verify a specific class. This
      * class will not be loaded into the JVM since it may be incorrect.
      *
      * @param currentClass the class that is verified.
      * @param currentSuperClass the super class of the class that is verified.
      * @param isInterface if the class that is verified is an interface.
      */
-    public SimpleVerifier(
+    public PatchedSimpleVerifier(
         final Type currentClass,
         final Type currentSuperClass,
         final boolean isInterface)
@@ -94,7 +94,7 @@ public class SimpleVerifier extends BasicVerifier {
     }
 
     /**
-     * Constructs a new {@link SimpleVerifier} to verify a specific class. This
+     * Constructs a new {@link PatchedSimpleVerifier} to verify a specific class. This
      * class will not be loaded into the JVM since it may be incorrect.
      *
      * @param currentClass the class that is verified.
@@ -103,7 +103,7 @@ public class SimpleVerifier extends BasicVerifier {
      *        that is verified.
      * @param isInterface if the class that is verified is an interface.
      */
-    public SimpleVerifier(
+    public PatchedSimpleVerifier(
         final Type currentClass,
         final Type currentSuperClass,
         final List<Type> currentClassInterfaces,
@@ -116,7 +116,7 @@ public class SimpleVerifier extends BasicVerifier {
                 isInterface);
     }
 
-    protected SimpleVerifier(
+    protected PatchedSimpleVerifier(
         final int api,
         final Type currentClass,
         final Type currentSuperClass,

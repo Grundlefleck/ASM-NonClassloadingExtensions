@@ -39,9 +39,9 @@ import junit.framework.TestCase;
 import org.objectweb.asm.Type;
 
 
-public class SimpleVerifierAssignabilityUnitTest extends TestCase {
+public class PatchedSimpleVerifierAssignabilityUnitTest extends TestCase {
     
-    private final SimpleVerifier verifier = new SimpleVerifier();
+    private final PatchedSimpleVerifier verifier = new PatchedSimpleVerifier();
 
     public void testSuperClassOfObjectIsNull() {
         assertSuperClass(null, Object.class);

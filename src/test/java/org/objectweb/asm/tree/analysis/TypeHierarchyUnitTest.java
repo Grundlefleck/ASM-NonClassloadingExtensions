@@ -202,7 +202,8 @@ public class TypeHierarchyUnitTest extends TestCase {
         assertTrue("Assertion is not consistent with Class.isAssignableFrom", to.isAssignableFrom(from));
         Type toType = Type.getType(to);
         Type fromType = Type.getType(from);
-        assertTrue("Type Hierarchy visitor is not consistent with Class.isAssignableFrom", 
+        assertTrue("Assertion is not consistent with SimpleVerifier.isAssignableFrom", new SimpleVerifier().isAssignableFrom(toType, fromType));
+        assertTrue("Type Hierarchy visitor is not consistent with Class.isAssignableFrom",
                 typeHierarchyReader.isAssignableFrom(toType, fromType));
     }
 
@@ -210,7 +211,8 @@ public class TypeHierarchyUnitTest extends TestCase {
         assertFalse("Assertion is not consistent with Class.isAssignableFrom", to.isAssignableFrom(from));
         Type toType = Type.getType(to);
         Type fromType = Type.getType(from);
-        assertFalse("Type Hierarchy visitor is not consistent with Class.isAssignableFrom", 
+        assertFalse("Assertion is not consistent with SimpleVerifier.isAssignableFrom", new SimpleVerifier().isAssignableFrom(toType, fromType));
+        assertFalse("Type Hierarchy visitor is not consistent with Class.isAssignableFrom",
                 typeHierarchyReader.isAssignableFrom(toType, fromType));
     }
     
