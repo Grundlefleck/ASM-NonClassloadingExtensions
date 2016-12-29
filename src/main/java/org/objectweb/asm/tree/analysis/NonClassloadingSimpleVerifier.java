@@ -32,6 +32,9 @@ package org.objectweb.asm.tree.analysis;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.analysis.TypeHierarchyReader.TypeHierarchy;
+
+import java.util.List;
 
 /**
  * An extended {@link PatchedSimpleVerifier} that guarantees not to load classes.
@@ -58,6 +61,10 @@ import org.objectweb.asm.Type;
  */
 public class NonClassloadingSimpleVerifier extends SimpleVerifier {
 
+    private final Type currentClass;
+    private final Type currentSuperClass;
+    private final List<Type> currentClassInterfaces;
+    private final boolean isInterface;
     /**
      * Used to obtain hierarchy information used in verification.
      */
@@ -67,7 +74,11 @@ public class NonClassloadingSimpleVerifier extends SimpleVerifier {
      * Default constructor which chooses a naive {@link TypeHierarchyReader}.
      */
     public NonClassloadingSimpleVerifier() {
-        typeHierarchyReader = new TypeHierarchyReader();
+        this(new TypeHierarchyReader());
+    }
+
+    public NonClassloadingSimpleVerifier(final Type currentClass, final Type currentSuperClass, boolean isInterface) {
+        this(currentClass, currentSuperClass, null, isInterface, new TypeHierarchyReader());
     }
 
     /**
@@ -75,8 +86,21 @@ public class NonClassloadingSimpleVerifier extends SimpleVerifier {
      * hierarchy information for given {@link Type}s.
      */
     public NonClassloadingSimpleVerifier(TypeHierarchyReader reader) {
-        typeHierarchyReader = reader;
+        this(null, null, null, false, reader);
     }
+
+    public NonClassloadingSimpleVerifier(final Type currentClass,
+                                         final Type currentSuperClass,
+                                         final List<Type> currentClassInterfaces,
+                                         final boolean isInterface,
+                                         TypeHierarchyReader reader) {
+        this.currentClass = currentClass;
+        this.currentSuperClass = currentSuperClass;
+        this.currentClassInterfaces = currentClassInterfaces;
+        this.isInterface = isInterface;
+        this.typeHierarchyReader = reader;
+    }
+
 
     /**
      * Unconditionally throws an {@link Error}. This method should never be
@@ -96,6 +120,9 @@ public class NonClassloadingSimpleVerifier extends SimpleVerifier {
      */
     @Override
     protected boolean isInterface(final Type t) {
+        if (currentClass != null && t.equals(currentClass)) {
+            return isInterface;
+        }
         return typeHierarchyReader.isInterface(t);
     }
 
@@ -107,6 +134,9 @@ public class NonClassloadingSimpleVerifier extends SimpleVerifier {
      */
     @Override
     protected Type getSuperClass(final Type t) {
+        if (currentClass != null && t.equals(currentClass)) {
+            return currentSuperClass;
+        }
         return typeHierarchyReader.getSuperClass(t);
     }
 
@@ -118,6 +148,40 @@ public class NonClassloadingSimpleVerifier extends SimpleVerifier {
      */
     @Override
     public boolean isAssignableFrom(Type toType, Type fromType) {
-        return typeHierarchyReader.isAssignableFrom(toType, fromType);
+        if (toType.equals(fromType)) {
+            return true;
+        }
+
+        if (currentClass != null && toType.equals(currentClass)) {
+            if (getSuperClass(fromType) == null) {
+                return false;
+            } else {
+                if (isInterface) {
+                    return fromType.getSort() == Type.OBJECT
+                        || fromType.getSort() == Type.ARRAY;
+                }
+                return isAssignableFrom(toType, getSuperClass(fromType));
+            }
+        }
+        if (currentClass != null && fromType.equals(currentClass)) {
+            if (isAssignableFrom(toType, currentSuperClass)) {
+                return true;
+            }
+            if (currentClassInterfaces != null) {
+                for (int i = 0; i < currentClassInterfaces.size(); ++i) {
+                    Type v = currentClassInterfaces.get(i);
+                    if (isAssignableFrom(toType, v)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        TypeHierarchy tc = typeHierarchyReader.hierarchyOf(toType);
+        if (tc.isInterface()) {
+            tc = TypeHierarchy.JAVA_LANG_OBJECT;
+        }
+        return tc.isAssignableFrom(fromType, typeHierarchyReader);
     }
 }

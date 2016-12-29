@@ -96,7 +96,7 @@ public class TypeHierarchyReader {
      * @see Type#getSort()
      */
     public Type getSuperClass(final Type t) {
-        return hierarchyOf(t).getSuperType();
+        return hierarchyOf(t).getSuperClass();
     }
 
     /**
@@ -243,18 +243,18 @@ public class TypeHierarchyReader {
         }
 
         private final Type thisType;
-        private final Type superType;
+        private final Type superClass;
         private final List<Type> interfaces;
         private final boolean isInterface;
 
         public TypeHierarchy(
             Type thisType,
-            Type superType,
+            Type superClass,
             List<Type> interfaces,
             boolean isInterface)
         {
             this.thisType = thisType;
-            this.superType = superType;
+            this.superClass = superClass;
             this.interfaces = interfaces;
             this.isInterface = isInterface;
         }
@@ -271,8 +271,8 @@ public class TypeHierarchyReader {
             return isInterface;
         }
 
-        public Type getSuperType() {
-            return superType;
+        public Type getSuperClass() {
+            return superClass;
         }
 
         public boolean isAssignableFrom(
@@ -301,7 +301,7 @@ public class TypeHierarchyReader {
             }
 
             if (u.hasSuperType()
-                    && isAssignableFrom(u.getSuperType(), typeHierarchyReader))
+                    && isAssignableFrom(u.getSuperClass(), typeHierarchyReader))
             {
                 return true;
             } else if (u.implementsAnyInterfaces()
@@ -309,7 +309,7 @@ public class TypeHierarchyReader {
                             typeHierarchyReader))
             {
                 return true;
-            } 
+            }
 
             return false;
         }
@@ -372,12 +372,12 @@ public class TypeHierarchyReader {
         }
 
         private boolean isSuperTypeOf(TypeHierarchy u) {
-            return type().equals(u.getSuperType());
+            return type().equals(u.getSuperClass());
         }
 
         private boolean hasSuperType() {
-            return getSuperType() != null
-                    && !JAVA_LANG_OBJECT.representsType(getSuperType());
+            return getSuperClass() != null
+                    && !JAVA_LANG_OBJECT.representsType(getSuperClass());
         }
 
         private boolean implementsAnyInterfaces() {
@@ -385,8 +385,8 @@ public class TypeHierarchyReader {
         }
 
         private boolean extendsObject() {
-            return getSuperType() != null
-                    && JAVA_LANG_OBJECT.representsType(getSuperType());
+            return getSuperClass() != null
+                    && JAVA_LANG_OBJECT.representsType(getSuperClass());
         }
 
         private boolean isSameType(TypeHierarchy u) {

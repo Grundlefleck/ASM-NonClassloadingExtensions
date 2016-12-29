@@ -30,18 +30,18 @@
 
 package org.objectweb.asm.tree.analysis;
 
-import static org.objectweb.asm.Type.getType;
+import junit.framework.TestCase;
+import org.objectweb.asm.Type;
 
 import java.io.Serializable;
 
-import junit.framework.TestCase;
-
-import org.objectweb.asm.Type;
+import static org.objectweb.asm.Type.getType;
 
 
-public class PatchedSimpleVerifierAssignabilityUnitTest extends TestCase {
+public class NonClassloadingSimpleVerifierAssignabilityUnitTest extends TestCase {
     
-    private final PatchedSimpleVerifier verifier = new PatchedSimpleVerifier();
+    private final NonClassloadingSimpleVerifier nonClassloadingSimpleVerifier = new NonClassloadingSimpleVerifier();
+    private final SimpleVerifier simpleVerifier = new NonClassloadingSimpleVerifier();
 
     public void testSuperClassOfObjectIsNull() {
         assertSuperClass(null, Object.class);
@@ -56,11 +56,11 @@ public class PatchedSimpleVerifierAssignabilityUnitTest extends TestCase {
     }
 
     public void testSuperClassOfInterfaceWithNoSuperInterfaceIsNull() {
-        assertSuperClass(null, Interface.class);
+        assertSuperClass(Object.class, Interface.class);
     }
 
     public void testSuperClassOfSubInterfaceIsNull() {
-        assertSuperClass(null, SubInterface.class);
+        assertSuperClass(Object.class, SubInterface.class);
     }
  
     public void testSuperclassOfArrayClassHasSameSemanticsAsJavaLangClass_getSuperClass() throws Exception {
@@ -173,6 +173,17 @@ public class PatchedSimpleVerifierAssignabilityUnitTest extends TestCase {
         assertIsAssignableFrom(float[].class, float[].class);
         assertIsAssignableFrom(double[].class, double[].class);
     }
+
+    public void testAssignmentOfPrimitiveArrayTypesToArrayOfObject() throws Exception {
+        assertIsAssignableFrom(Object[].class, boolean[].class);
+        assertIsAssignableFrom(Object[].class, byte[].class);
+        assertIsAssignableFrom(Object[].class, char[].class);
+        assertIsAssignableFrom(Object[].class, short[].class);
+        assertIsAssignableFrom(Object[].class, int[].class);
+        assertIsAssignableFrom(Object[].class, long[].class);
+        assertIsAssignableFrom(Object[].class, float[].class);
+        assertIsAssignableFrom(Object[].class, double[].class);
+    }
    
     public void testMergingTwoBasicValuesRepresentingObjectResultsInObjectBasicValue() {
         assertMergeResult(Object.class, Object.class, Object.class);
@@ -214,38 +225,39 @@ public class PatchedSimpleVerifierAssignabilityUnitTest extends TestCase {
         assertMergeResult(Superclass[][].class, Superclass[][].class, Subclass[][].class);
     }
     
-    
     private void assertMergeResult(Class<?> expected, Class<?> first, Class<?> second) {
         BasicValue expectedBasicValue = new BasicValue(getType(expected));
-        
+
+        assertEquals("Assertion is not consistent with SimpleVerifier.merge",
+                expectedBasicValue, simpleVerifier.merge(new BasicValue(getType(first)), new BasicValue(getType(second))));
         assertEquals("Verifier produced incorrect merge result.",
-                expectedBasicValue, verifier.merge(new BasicValue(getType(first)), new BasicValue(getType(second))));
-        
+                expectedBasicValue, nonClassloadingSimpleVerifier.merge(new BasicValue(getType(first)), new BasicValue(getType(second))));
     }
 
     private void assertIsAssignableFrom(Class<?> to, Class<?> from) {
-        assertTrue("Assertion is not consistent with Class.isAssignableFrom", to.isAssignableFrom(from));
         Type toType = Type.getType(to);
         Type fromType = Type.getType(from);
-        assertTrue("Verifier is not consistent with Class.isAssignableFrom", 
-                verifier.isAssignableFrom2(toType, fromType));
-        assertTrue("Verifier is not consistent with Class.isAssignableFrom", 
-                verifier.isAssignableFrom(toType, fromType));
+        assertTrue("Assertion is not consistent with SimpleVerifier.isAssignableFrom",
+                simpleVerifier.isAssignableFrom(toType, fromType));
+        assertTrue("NonClassloadingSimpleVerifier is not consistent with SimpleVerifier.isAssignableFrom",
+                nonClassloadingSimpleVerifier.isAssignableFrom(toType, fromType));
     }
 
     private void assertIsNotAssignableFrom(Class<?> to, Class<?> from) {
-        assertFalse("Assertion is not consistent with Class.isAssignableFrom", to.isAssignableFrom(from));
         Type toType = Type.getType(to);
         Type fromType = Type.getType(from);
-        assertFalse("Verifier is not consistent with Class.isAssignableFrom", 
-                verifier.isAssignableFrom2(toType, fromType));
-        assertFalse("Verifier is not consistent with Class.isAssignableFrom", 
-                verifier.isAssignableFrom(toType, fromType));
+        assertFalse("Assertion is not consistent with SimpleVerifier.isAssignableFrom",
+                simpleVerifier.isAssignableFrom(toType, fromType));
+        assertFalse("NonClassloadingSimpleVerifier is not consistent with SimpleVerifier.isAssignableFrom",
+                nonClassloadingSimpleVerifier.isAssignableFrom(toType, fromType));
     }
     
-    private void assertSuperClass(Class<?> expected, Class<?> actual) {
-        assertEquals("getSuperClass assertion is inconsistent with java.lang.Class", expected, actual.getSuperclass());
-        assertEquals(expected == null ?  null : Type.getType(expected), verifier.getSuperClass(getType(actual)));
+    private void assertSuperClass(Class<?> expectedSuperClass, Class<?> subClass) {
+        Type expectedType = expectedSuperClass == null ? null : Type.getType(expectedSuperClass);
+        assertEquals("getSuperClass assertion is inconsistent with SimpleVerifier.getSuperClass",
+            expectedType, simpleVerifier.getSuperClass(getType(subClass)));
+        assertEquals("NonClassloadingSimpleVerifier.getSuperClass is inconsistent with SimpleVerifier.getSuperClass",
+            expectedType, nonClassloadingSimpleVerifier.getSuperClass(getType(subClass)));
     }
     
     public static class AssignableFromItself { }

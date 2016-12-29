@@ -15,7 +15,6 @@ import org.objectweb.asm.tree.analysis.AnalyzerException;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.BasicVerifier;
 import org.objectweb.asm.tree.analysis.NonClassloadingSimpleVerifier;
-import org.objectweb.asm.tree.analysis.PatchedSimpleVerifier;
 import org.objectweb.asm.tree.analysis.SimpleVerifier;
 
 import java.util.Collection;
@@ -31,18 +30,12 @@ public class CanCalculateFramesForEveryJdkRuntimeClass extends TestCase {
     private RegExpResourceFilter regExpResourceFilter = new RegExpResourceFilter(ANY, ENDS_WITH_CLASS);
     private String[] findResources = classPath.findResources("", regExpResourceFilter);
     private final IsAssignableDifferencesVerifier verifier = new IsAssignableDifferencesVerifier(
-        new PatchedSimpleVerifier(), new NonClassloadingSimpleVerifier());
+        new NonClassloadingSimpleVerifier());
 
 
     public void testWithClassesBeingLoadedWithSimpleVerifier() throws Exception {
         for (String resourcePath: findResources) {
             new ClassReader(ClassLoader.getSystemResourceAsStream(resourcePath)).accept(new DelegatesToMethodVisitor(new SimpleVerifier()), 0);
-        }
-    }
-
-    public void testWithClassesBeingLoadedWithPatchedSimpleVerifier() throws Exception {
-        for (String resourcePath: findResources) {
-            new ClassReader(ClassLoader.getSystemResourceAsStream(resourcePath)).accept(new DelegatesToMethodVisitor(new PatchedSimpleVerifier()), 0);
         }
     }
 
@@ -74,9 +67,7 @@ public class CanCalculateFramesForEveryJdkRuntimeClass extends TestCase {
     }
 
     public void testFailingClass() throws Exception {
-        new ClassReader(ClassLoader.getSystemResourceAsStream("com/sun/beans/TypeResolver.class"))
-            .accept(new DelegatesToMethodVisitor(verifier), 0);
-
+        verifier.isAssignableFrom(Type.getType("[Ljava/lang/Object;"), Type.getType("[Z"));
         assertNoDifferences(verifier.differences);
     }
 
@@ -127,27 +118,16 @@ public class CanCalculateFramesForEveryJdkRuntimeClass extends TestCase {
 
     private static class IsAssignableDifferencesVerifier extends SimpleVerifier {
 
-        private PatchedSimpleVerifier patchedSimpleVerifier;
         private NonClassloadingSimpleVerifier nonClassloadingSimpleVerifier;
         private Set<Difference> differences = new HashSet<Difference>();
 
-        IsAssignableDifferencesVerifier(PatchedSimpleVerifier patchedSimpleVerifier, NonClassloadingSimpleVerifier nonClassloadingSimpleVerifier) {
-            this.patchedSimpleVerifier = patchedSimpleVerifier;
+        IsAssignableDifferencesVerifier(NonClassloadingSimpleVerifier nonClassloadingSimpleVerifier) {
             this.nonClassloadingSimpleVerifier = nonClassloadingSimpleVerifier;
         }
 
         @Override
         protected boolean isAssignableFrom(Type t, Type u) {
             boolean simpleVerifierResult = super.isAssignableFrom(t, u);
-
-            boolean patchedVerifierResult = !simpleVerifierResult;
-            Exception patchedVerifierException = null;
-            try {
-                patchedVerifierResult = patchedSimpleVerifier.isAssignableFrom2(t, u);
-
-            } catch (Exception e) {
-                patchedVerifierException = e;
-            }
 
             boolean nonClassloadingResult = !simpleVerifierResult;
             Exception nonClassloadingException = null;
@@ -160,10 +140,10 @@ public class CanCalculateFramesForEveryJdkRuntimeClass extends TestCase {
 
             boolean classResult = getClass(t).isAssignableFrom(getClass(u));
 
-            if (patchedVerifierException != null || nonClassloadingException != null) {
-                differences.add(new IsAssignableException(t, u, patchedVerifierException, nonClassloadingException));
-            } else if (simpleVerifierResult != patchedVerifierResult || simpleVerifierResult != nonClassloadingResult) {
-                differences.add(new IsAssignableResultDifference(t, u, simpleVerifierResult, classResult, patchedVerifierResult, nonClassloadingResult));
+            if (nonClassloadingException != null) {
+                differences.add(new IsAssignableException(t, u, nonClassloadingException));
+            } else if (simpleVerifierResult != nonClassloadingResult) {
+                differences.add(new IsAssignableResultDifference(t, u, simpleVerifierResult, classResult, nonClassloadingResult));
             }
 
             return simpleVerifierResult;
@@ -200,12 +180,11 @@ public class CanCalculateFramesForEveryJdkRuntimeClass extends TestCase {
     }
 
     private static final class IsAssignableException extends Difference {
-        final Exception patchedVerifierException, nonClassLoadingException;
+        final Exception nonClassLoadingException;
 
 
-        private IsAssignableException(Type t, Type u, Exception patchedVerifierException, Exception nonClassLoadingException) {
+        private IsAssignableException(Type t, Type u, Exception nonClassLoadingException) {
             super(t, u);
-            this.patchedVerifierException = patchedVerifierException;
             this.nonClassLoadingException = nonClassLoadingException;
         }
 
@@ -214,20 +193,18 @@ public class CanCalculateFramesForEveryJdkRuntimeClass extends TestCase {
             return "IsAssignableException{" +
                 "t=" + t +
                 ", u=" + u +
-                "patchedVerifierException=" + patchedVerifierException +
                 ", nonClassLoadingException=" + nonClassLoadingException +
                 '}';
         }
     }
 
     private static final class IsAssignableResultDifference extends Difference {
-        final boolean simpleVerifierResult, classResult, patchedVerifierResult, nonClassloadingVerifierResult;
+        final boolean simpleVerifierResult, classResult, nonClassloadingVerifierResult;
 
-        IsAssignableResultDifference(Type t, Type u, boolean simpleVerifierResult, boolean classResult, boolean patchedVerifierResult, boolean nonClassloadingVerifierResult) {
+        IsAssignableResultDifference(Type t, Type u, boolean simpleVerifierResult, boolean classResult, boolean nonClassloadingVerifierResult) {
             super(t, u);
             this.simpleVerifierResult = simpleVerifierResult;
             this.classResult = classResult;
-            this.patchedVerifierResult = patchedVerifierResult;
             this.nonClassloadingVerifierResult = nonClassloadingVerifierResult;
         }
 
@@ -239,7 +216,6 @@ public class CanCalculateFramesForEveryJdkRuntimeClass extends TestCase {
                 ", u=" + u +
                 ", simpleVerifierResult=" + simpleVerifierResult +
                 ", classResult=" + classResult +
-                ", patchedVerifierResult=" + patchedVerifierResult +
                 ", nonClassloadingVerifierResult=" + nonClassloadingVerifierResult +
                 '}';
         }
