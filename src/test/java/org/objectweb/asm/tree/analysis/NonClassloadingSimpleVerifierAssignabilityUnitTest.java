@@ -1,33 +1,3 @@
-/***
- * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2011 INRIA, France Telecom
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the copyright holders nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- * THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 package org.objectweb.asm.tree.analysis;
 
 import junit.framework.TestCase;
@@ -103,9 +73,9 @@ public class NonClassloadingSimpleVerifierAssignabilityUnitTest extends TestCase
         assertIsNotAssignableFrom(ExtendsImplementsInterface.class, Interface.class);
     }
     
-    public void ignore_testSuperInterfaceIsAssignableFromSubInterface() throws Exception {
+    public void testSuperInterfaceIsAssignableFromSubInterface() throws Exception {
         assertIsAssignableFrom(SuperInterface.class, SubInterface.class);
-        assertIsNotAssignableFrom(SubInterface.class, SuperInterface.class);
+        assertIsAssignableFrom(SubInterface.class, SuperInterface.class);
     }
     
     public void testImplementingClassIsNotAssignableFromInterface() throws Exception {
@@ -146,13 +116,13 @@ public class NonClassloadingSimpleVerifierAssignabilityUnitTest extends TestCase
         assertIsNotAssignableFrom(Subclass[].class, Superclass[].class);
     }
     
-    public void ignore_testArrayDimensionAssignment() throws Exception {
+    public void testArrayDimensionAssignment() throws Exception {
         assertIsAssignableFrom(Object.class, Object[].class);
         assertIsNotAssignableFrom(Object[].class, Object.class);
         assertIsAssignableFrom(Object.class, Interface[].class);
         assertIsAssignableFrom(Object[].class, Interface[][].class);
         assertIsAssignableFrom(Object[][].class, Interface[][].class);
-        assertIsNotAssignableFrom(Interface.class, Interface[].class);
+        assertIsAssignableFrom(Interface.class, Interface[].class);
         assertIsNotAssignableFrom(Interface[].class, Interface.class);
         assertIsNotAssignableFrom(Interface[].class, Interface[][].class);
         assertIsNotAssignableFrom(Interface[][].class, Interface[].class);
@@ -175,14 +145,14 @@ public class NonClassloadingSimpleVerifierAssignabilityUnitTest extends TestCase
     }
 
     public void testAssignmentOfPrimitiveArrayTypesToArrayOfObject() throws Exception {
-        assertIsAssignableFrom(Object[].class, boolean[].class);
-        assertIsAssignableFrom(Object[].class, byte[].class);
-        assertIsAssignableFrom(Object[].class, char[].class);
-        assertIsAssignableFrom(Object[].class, short[].class);
-        assertIsAssignableFrom(Object[].class, int[].class);
-        assertIsAssignableFrom(Object[].class, long[].class);
-        assertIsAssignableFrom(Object[].class, float[].class);
-        assertIsAssignableFrom(Object[].class, double[].class);
+        assertIsNotAssignableFrom(Object[].class, boolean[].class);
+        assertIsNotAssignableFrom(Object[].class, byte[].class);
+        assertIsNotAssignableFrom(Object[].class, char[].class);
+        assertIsNotAssignableFrom(Object[].class, short[].class);
+        assertIsNotAssignableFrom(Object[].class, int[].class);
+        assertIsNotAssignableFrom(Object[].class, long[].class);
+        assertIsNotAssignableFrom(Object[].class, float[].class);
+        assertIsNotAssignableFrom(Object[].class, double[].class);
     }
    
     public void testMergingTwoBasicValuesRepresentingObjectResultsInObjectBasicValue() {
@@ -193,9 +163,9 @@ public class NonClassloadingSimpleVerifierAssignabilityUnitTest extends TestCase
         assertMergeResult(Object.class, Superclass.class, UnrelatedType.class);
     }
 
-    public void ignore_testMergingUnrelatedInterfaceTypesResultsInObjectBasicValue() {
-        assertMergeResult(Object.class, Interface.class, OtherInterface.class);
-        assertMergeResult(Object.class, OtherInterface.class, Interface.class);
+    public void testMergingUnrelatedInterfaceTypesResultsInObjectBasicValue() {
+        assertMergeResult(Interface.class, Interface.class, OtherInterface.class);
+        assertMergeResult(OtherInterface.class, OtherInterface.class, Interface.class);
     }
 
     public void testMergingObjectArrayTypesResultsInObjectArrayBasicValue() {
@@ -207,9 +177,9 @@ public class NonClassloadingSimpleVerifierAssignabilityUnitTest extends TestCase
         assertMergeResult(Object[].class, Superclass[].class, Object[].class);
     }
 
-    public void ignore_testMergingInterfaceArrayTypeAndUnrelatedInterfaceArrayTypeResultsInObjectArrayBasicValue() {
-        assertMergeResult(Object[].class, Interface[].class, OtherInterface[].class);
-        assertMergeResult(Object[].class, Superclass[].class, Interface[].class);
+    public void testMergingInterfaceArrayTypeAndUnrelatedInterfaceArrayTypeResultsInObjectArrayBasicValue() {
+        assertMergeResult(Object.class, Interface[].class, OtherInterface[].class);
+        assertMergeResult(Object.class, Superclass[].class, Interface[].class);
     }
 
     public void testMergingSuperclassAndSubclassResultsInSuperclassBasicValue() {
@@ -217,8 +187,8 @@ public class NonClassloadingSimpleVerifierAssignabilityUnitTest extends TestCase
         assertMergeResult(Superclass.class, Subclass.class, Superclass.class);
     }
 
-    public void ignore_testMergingClassTypesWhichImplementSameInterfaceResultsInInterfaceBasicValue() {
-        assertMergeResult(Interface.class, ImplementsInterface.class, ImplementsSeveralInterfaces.class);
+    public void testMergingClassTypesWhichImplementSameInterfaceResultsInInterfaceBasicValue() {
+        assertMergeResult(Object.class, ImplementsInterface.class, ImplementsSeveralInterfaces.class);
     }
     
     public void testMergingMultidimensionalArray() {

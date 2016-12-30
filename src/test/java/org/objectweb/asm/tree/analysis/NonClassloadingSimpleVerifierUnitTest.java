@@ -40,6 +40,8 @@ import org.objectweb.asm.tree.MethodNode;
 /**
  * NonClassloadingSimpleVerifierUnitTest unit tests.
  *
+ * Copied directly from the original unit tests for SimpleVerifier.
+ *
  * @author Eric Bruneton
  */
 public class NonClassloadingSimpleVerifierUnitTest extends TestCase implements Opcodes {
