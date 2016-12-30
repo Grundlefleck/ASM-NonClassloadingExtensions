@@ -170,6 +170,28 @@ public class TypeHierarchyUnitTest extends TestCase {
         assertIsAssignableFrom(double[].class, double[].class);
     }
 
+    public void testAssignmentOfPrimitiveArrayTypesToObjectType() throws Exception {
+        assertIsNotAssignableFrom(Object[].class, boolean[].class);
+        assertIsNotAssignableFrom(Object[].class, byte[].class);
+        assertIsNotAssignableFrom(Object[].class, char[].class);
+        assertIsNotAssignableFrom(Object[].class, short[].class);
+        assertIsNotAssignableFrom(Object[].class, int[].class);
+        assertIsNotAssignableFrom(Object[].class, long[].class);
+        assertIsNotAssignableFrom(Object[].class, float[].class);
+        assertIsNotAssignableFrom(Object[].class, double[].class);
+    }
+
+    public void testAssignmentOfObjectArrayToPrimitiveArrayTypes() throws Exception {
+        assertIsNotAssignableFrom(boolean[].class, Object[].class);
+        assertIsNotAssignableFrom(byte[].class, Object[].class);
+        assertIsNotAssignableFrom(char[].class, Object[].class);
+        assertIsNotAssignableFrom(short[].class, Object[].class);
+        assertIsNotAssignableFrom(int[].class, Object[].class);
+        assertIsNotAssignableFrom(long[].class, Object[].class);
+        assertIsNotAssignableFrom(float[].class, Object[].class);
+        assertIsNotAssignableFrom(double[].class, Object[].class);
+    }
+
     public void testGetCommonSuperClass_shouldBeObjectForUnrelatedClasses() throws Exception {
         assertCommonSuperclass(Object.class, Superclass.class, UnrelatedType.class);
     }

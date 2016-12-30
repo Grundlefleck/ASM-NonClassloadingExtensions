@@ -290,8 +290,8 @@ public class TypeHierarchyReader {
             } else if (this.isInterfaceImplementedBy(u)) {
                 return true;
             } else if (bothAreArrayTypes(u) && haveSameDimensionality(u)) {
-                return JAVA_LANG_OBJECT.representsType(typeOfArray())
-                        || arrayTypeIsAssignableFrom(u, typeHierarchyReader);
+                return (JAVA_LANG_OBJECT.representsType(typeOfArray()) && u.isReferenceArrayType())
+                    || arrayTypeIsAssignableFrom(u, typeHierarchyReader);
             } else if (bothAreArrayTypes(u)
                     && isObjectArrayWithSmallerDimensionalityThan(u))
             {
@@ -345,9 +345,10 @@ public class TypeHierarchyReader {
             TypeHierarchy u,
             TypeHierarchyReader reader)
         {
+
             TypeHierarchy thisArrayType = reader.hierarchyOf(typeOfArray());
-            return thisArrayType.isAssignableFrom(reader.hierarchyOf(u.typeOfArray()),
-                    reader);
+            return typeOfArray().getSort() == u.typeOfArray().getSort()
+                && thisArrayType.isAssignableFrom(reader.hierarchyOf(u.typeOfArray()), reader);
         }
 
         private boolean bothAreArrayTypes(TypeHierarchy u) {
@@ -365,6 +366,10 @@ public class TypeHierarchyReader {
 
         private boolean isArrayType() {
             return thisType.getSort() == Type.ARRAY;
+        }
+
+        private boolean isReferenceArrayType() {
+            return isArrayType() && typeOfArray().getSort() == Type.OBJECT;
         }
 
         private boolean isInterfaceImplementedBy(TypeHierarchy u) {
