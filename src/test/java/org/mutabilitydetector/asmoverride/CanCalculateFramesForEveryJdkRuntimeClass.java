@@ -26,7 +26,7 @@ import static com.google.classpath.RegExpResourceFilter.ENDS_WITH_CLASS;
 
 public class CanCalculateFramesForEveryJdkRuntimeClass extends TestCase {
 
-    private ClassPath classPath = new ClassPathFactory().createFromPath("/usr/lib/jvm/java-1.8.0-openjdk-amd64/jre/lib/rt.jar");
+    private ClassPath classPath = new ClassPathFactory().createFromPath(System.getProperty("java.home") + "/lib/rt.jar");
     private RegExpResourceFilter regExpResourceFilter = new RegExpResourceFilter(ANY, ENDS_WITH_CLASS);
     private String[] findResources = classPath.findResources("", regExpResourceFilter);
     private final IsAssignableDifferencesVerifier verifier = new IsAssignableDifferencesVerifier(
@@ -53,6 +53,11 @@ public class CanCalculateFramesForEveryJdkRuntimeClass extends TestCase {
         assertNoDifferences(verifier.differences);
     }
 
+    public void testFailingClass() throws Exception {
+        verifier.isAssignableFrom(Type.getType("[Ljava/lang/Object;"), Type.getType("[Z"));
+        assertNoDifferences(verifier.differences);
+    }
+
     private void assertNoDifferences(Collection<Difference> differences) {
         if (!differences.isEmpty()) {
             StringBuilder differencesFormated = new StringBuilder();
@@ -66,24 +71,40 @@ public class CanCalculateFramesForEveryJdkRuntimeClass extends TestCase {
         }
     }
 
-    public void testFailingClass() throws Exception {
-        verifier.isAssignableFrom(Type.getType("[Ljava/lang/Object;"), Type.getType("[Z"));
-        assertNoDifferences(verifier.differences);
-    }
-
     private static class DelegatesToMethodVisitor extends ClassVisitor {
 
         private String ownerName;
         private BasicVerifier verifier;
 
         DelegatesToMethodVisitor(BasicVerifier verifier) {
-            super(Opcodes.ASM5);
+            super(Opcodes.ASM5, new InnerClassVisitor(verifier));
             this.verifier = verifier;
         }
 
         @Override
         public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
             super.visit(version, access, name, signature, superName, interfaces);
+            this.ownerName = name;
+        }
+
+        @Override
+        public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+            return new RequiresPopulatedStackFrames(ownerName, access, name, desc, signature, exceptions, verifier);
+        }
+    }
+
+    private static final class InnerClassVisitor extends ClassVisitor {
+        private final BasicVerifier verifier;
+        private String ownerName;
+
+        InnerClassVisitor(BasicVerifier verifier) {
+            super(Opcodes.ASM5);
+            this.verifier = verifier;
+        }
+
+        @Override
+        public void visitInnerClass(String name, String outerName, String innerName, int access) {
+            super.visitInnerClass(name, outerName, innerName, access);
             this.ownerName = name;
         }
 
@@ -158,7 +179,6 @@ public class CanCalculateFramesForEveryJdkRuntimeClass extends TestCase {
             this.t = t;
             this.u = u;
         }
-
 
         @Override
         public boolean equals(Object o) {
