@@ -196,12 +196,13 @@ public class TypeHierarchyReader {
     }
 
     protected TypeHierarchy obtainHierarchyOf(ClassReader reader) {
+        boolean isInterface = (reader.getAccess() & ACC_INTERFACE) != 0;
         return new TypeHierarchy(Type.getObjectType(reader.getClassName()),
-                reader.getSuperName() == null
-                        ? null
-                        : Type.getObjectType(reader.getSuperName()),
-                interfacesTypesFrom(reader.getInterfaces()),
-                (reader.getAccess() & ACC_INTERFACE) != 0);
+            reader.getSuperName() == null || isInterface
+                ? null
+                : Type.getObjectType(reader.getSuperName()),
+            interfacesTypesFrom(reader.getInterfaces()),
+            isInterface);
     }
 
     private List<Type> interfacesTypesFrom(String[] interfaces) {

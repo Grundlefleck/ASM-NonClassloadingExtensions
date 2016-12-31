@@ -1,68 +1,34 @@
-/***
- * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2011 INRIA, France Telecom
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the copyright holders nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- * THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 package org.objectweb.asm.tree.analysis;
 
-import static org.objectweb.asm.Type.getType;
-import static org.objectweb.asm.tree.analysis.TypeHierarchyReader.TypeHierarchy.JAVA_LANG_OBJECT;
+import junit.framework.TestCase;
+import org.objectweb.asm.Type;
 
 import java.io.Serializable;
 
-import junit.framework.TestCase;
-
-import org.objectweb.asm.Type;
-
-public class TypeHierarchyUnitTest extends TestCase {
+public class TypeHierarchyReaderConsistentWithJavaLangClassTest extends TestCase {
     
-    private TypeHierarchyReader typeHierarchyReader = new TypeHierarchyReader();
+    private final TypeHierarchyReader typeHierarchyReader = new TypeHierarchyReader();
     
     public void testSuperClassOfConcreteClassExtendingObjectImplicitlyIsTypeRepresentingJavaLangObject() {
-        assertEquals(JAVA_LANG_OBJECT.type(), typeHierarchyReader.getSuperClass(getType(UnrelatedType.class)));
+        assertSuperClass(Object.class, UnrelatedType.class);
     }
 
     public void testSuperClassOfSubclass() {
-        assertEquals(getType(Superclass.class), typeHierarchyReader.getSuperClass(getType(Subclass.class)));
+        assertSuperClass(Superclass.class, Subclass.class);
     }
 
     public void testSuperClassOfInterfaceWithNoSuperInterfaceIsObject() {
-        assertEquals(JAVA_LANG_OBJECT.type(), typeHierarchyReader.getSuperClass(getType(Interface.class)));
+        assertSuperClass(null, Interface.class);
     }
 
     public void testSuperClassOfSubInterfaceIsJavaLangObject() {
-        assertEquals(JAVA_LANG_OBJECT.type(), typeHierarchyReader.getSuperClass(getType(SubInterface.class)));
+        assertSuperClass(null, SubInterface.class);
     }
     
     public void testSuperclassOfArrayClassHasSameSemanticsAsJavaLangClass_getSuperClass() throws Exception {
-        assertEquals(getType(Object[].class.getSuperclass()), typeHierarchyReader.getSuperClass(getType(Object[].class)));
-        assertEquals(getType(Interface[].class.getSuperclass()), typeHierarchyReader.getSuperClass(getType(Interface[].class)));
-        assertEquals(getType(Superclass[].class.getSuperclass()), typeHierarchyReader.getSuperClass(getType(Superclass[].class)));
+        assertSuperClass(Object.class, Object[].class);
+        assertSuperClass(Object.class, Interface[].class);
+        assertSuperClass(Object.class, Superclass[].class);
     }
     
     public void testClassIsAssignableFromItself() {
@@ -192,32 +158,14 @@ public class TypeHierarchyUnitTest extends TestCase {
         assertIsNotAssignableFrom(double[].class, Object[].class);
     }
 
-    public void testGetCommonSuperClass_shouldBeObjectForUnrelatedClasses() throws Exception {
-        assertCommonSuperclass(Object.class, Superclass.class, UnrelatedType.class);
-    }
-
-    public void testGetCommonSuperClass_shouldBeClosestSharedSuperclass() throws Exception {
-        assertCommonSuperclass(Superclass.class, Subclass.class, OtherSubclass.class);
-    }
-
-    public void testGetCommonSuperClass_shouldBeSameTypeWhenBothAreEqual() throws Exception {
-        assertCommonSuperclass(UnrelatedType.class, UnrelatedType.class, UnrelatedType.class);
-    }
-
-    public void testGetCommonSuperClass_shouldBeSuperclassOfTwoGivenTypes() throws Exception {
-        assertCommonSuperclass(Superclass.class, Superclass.class, Subclass.class);
-    }
-
-    public void testGetCommonSuperClass_shouldBeObjectForUnrelatedInterfaces() throws Exception {
-        assertCommonSuperclass(Object.class, Interface.class, OtherInterface.class);
-    }
-
-    public void fails_returnsObject_testGetCommonSuperClass_shouldBeClosestSharedInterface() throws Exception {
-        assertCommonSuperclass(SubInterface.class, ImplementsSeveralInterfaces.class, AlsoImplementsSubInterface.class);
-    }
-
-    public void testGetCommonSuperClass_shouldBeObjectForTwoInterfacesWhoShareCommonSuperInterface() throws Exception {
-        assertCommonSuperclass(Object.class, SubInterface.class, OtherSubInterface.class);
+    private void assertSuperClass(Class<?> expectedSuperClass, Class<?> subclass) {
+        assertEquals("Assertion is not consistent with Class.getSuperclass",
+             expectedSuperClass, subclass.getSuperclass());
+        Type superclassType = expectedSuperClass == null ? null : Type.getType(expectedSuperClass);
+        Type subclassType = Type.getType(subclass);
+        Type actualSuperclassType = typeHierarchyReader.getSuperClass(subclassType);
+        assertTrue("Type Hierarchy visitor is not consistent with Class.getSuperclass",
+            actualSuperclassType == null ? superclassType == null : actualSuperclassType.equals(superclassType));
     }
 
     private void assertIsAssignableFrom(Class<?> to, Class<?> from) {
@@ -236,39 +184,25 @@ public class TypeHierarchyUnitTest extends TestCase {
                 typeHierarchyReader.isAssignableFrom(toType, fromType));
     }
     
-    private void assertCommonSuperclass(Class<?> expected, Class<?> first, Class<?> second) {
-        assertEquals(slashedName(expected),
-                typeHierarchyReader.getCommonSuperClass(slashedName(first), slashedName(second)));
-        assertEquals(slashedName(expected),
-                typeHierarchyReader.getCommonSuperClass(slashedName(second), slashedName(first)));
-    }
 
-    private String slashedName(Class<?> cls) {
-        return cls.getName().replace(".", "/");
-    }
+    static class AssignableFromItself { }
     
-    public static class AssignableFromItself { }
+    static class UnrelatedType { }
     
-    public static class UnrelatedType { }
+    static class Superclass { }
+    static class Subclass extends Superclass { }
+    static class OtherSubclass extends Superclass { }
+    static class SubSubclass extends Subclass { }
     
-    public static class Superclass { }
-    public static class Subclass extends Superclass { }
-    public static class OtherSubclass extends Superclass { }
-    public static class SubSubclass extends Subclass { }
+    interface Interface { }
+    static class ImplementsInterface implements Interface { }
+    static class ExtendsImplementsInterface extends ImplementsInterface { }
     
-    public static interface Interface { }
-    public static interface OtherInterface { }
-    public static class ImplementsInterface implements Interface { }
-    public static class ExtendsImplementsInterface extends ImplementsInterface { }
-    
-    public static interface SuperInterface { }
-    public static interface SubInterface extends SuperInterface { }
-    public static interface OtherSubInterface { }
-    
-    public static class ImplementsSeveralInterfaces implements Interface, SubInterface { }
-    public static class OtherImplementsInterface implements Interface { }
-    public static class AlsoImplementsSubInterface implements SubInterface { }
-    
-    public static class ExtendsClassOutwithInterfaceHierarchy extends UnrelatedType implements SubInterface { }
+    interface SuperInterface { }
+    interface SubInterface extends SuperInterface { }
+
+    static class ImplementsSeveralInterfaces implements Interface, SubInterface { }
+    static class OtherImplementsInterface implements Interface { }
+    static class ExtendsClassOutwithInterfaceHierarchy extends UnrelatedType implements SubInterface { }
     
 }

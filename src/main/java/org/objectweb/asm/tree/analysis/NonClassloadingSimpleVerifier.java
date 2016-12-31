@@ -37,7 +37,7 @@ import org.objectweb.asm.tree.analysis.TypeHierarchyReader.TypeHierarchy;
 import java.util.List;
 
 /**
- * An extended {@link PatchedSimpleVerifier} that guarantees not to load classes.
+ * An extended {@link SimpleVerifier} that guarantees not to load classes.
  * 
  * Delegates to an underlying {@link TypeHierarchyReader} to perform the
  * necessary visiting of class files to find the information required for
@@ -52,7 +52,7 @@ import java.util.List;
  * your environment.
  * 
  * @see ClassReader#ClassReader(String)
- * @see PatchedSimpleVerifier
+ * @see SimpleVerifier
  * @see Type
  * @see TypeHierarchyReader
  * 

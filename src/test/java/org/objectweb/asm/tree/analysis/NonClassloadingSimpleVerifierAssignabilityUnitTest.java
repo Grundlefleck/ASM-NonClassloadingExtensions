@@ -11,7 +11,7 @@ import static org.objectweb.asm.Type.getType;
 public class NonClassloadingSimpleVerifierAssignabilityUnitTest extends TestCase {
     
     private final NonClassloadingSimpleVerifier nonClassloadingSimpleVerifier = new NonClassloadingSimpleVerifier();
-    private final SimpleVerifier simpleVerifier = new NonClassloadingSimpleVerifier();
+    private final SimpleVerifier simpleVerifier = new SimpleVerifier();
 
     public void testSuperClassOfObjectIsNull() {
         assertSuperClass(null, Object.class);
@@ -26,11 +26,11 @@ public class NonClassloadingSimpleVerifierAssignabilityUnitTest extends TestCase
     }
 
     public void testSuperClassOfInterfaceWithNoSuperInterfaceIsNull() {
-        assertSuperClass(Object.class, Interface.class);
+        assertSuperClass(null, Interface.class);
     }
 
     public void testSuperClassOfSubInterfaceIsNull() {
-        assertSuperClass(Object.class, SubInterface.class);
+        assertSuperClass(null, SubInterface.class);
     }
  
     public void testSuperclassOfArrayClassHasSameSemanticsAsJavaLangClass_getSuperClass() throws Exception {
