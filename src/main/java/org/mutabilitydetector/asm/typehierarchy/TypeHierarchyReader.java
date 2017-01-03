@@ -28,21 +28,21 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.mutabilitydetector.asm;
+package org.mutabilitydetector.asm.typehierarchy;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
 import static org.objectweb.asm.Opcodes.ACC_INTERFACE;
 import static org.objectweb.asm.Type.getType;
-import static org.mutabilitydetector.asm.TypeHierarchyReader.TypeHierarchy.BOOLEAN_HIERARCHY;
-import static org.mutabilitydetector.asm.TypeHierarchyReader.TypeHierarchy.BYTE_HIERARCHY;
-import static org.mutabilitydetector.asm.TypeHierarchyReader.TypeHierarchy.CHAR_HIERARCHY;
-import static org.mutabilitydetector.asm.TypeHierarchyReader.TypeHierarchy.DOUBLE_HIERARCHY;
-import static org.mutabilitydetector.asm.TypeHierarchyReader.TypeHierarchy.FLOAT_HIERARCHY;
-import static org.mutabilitydetector.asm.TypeHierarchyReader.TypeHierarchy.INT_HIERARCHY;
-import static org.mutabilitydetector.asm.TypeHierarchyReader.TypeHierarchy.LONG_HIERARCHY;
-import static org.mutabilitydetector.asm.TypeHierarchyReader.TypeHierarchy.SHORT_HIERARCHY;
-import static org.mutabilitydetector.asm.TypeHierarchyReader.TypeHierarchy.VOID_HIERARCHY;
+import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader.TypeHierarchy.BOOLEAN_HIERARCHY;
+import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader.TypeHierarchy.BYTE_HIERARCHY;
+import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader.TypeHierarchy.CHAR_HIERARCHY;
+import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader.TypeHierarchy.DOUBLE_HIERARCHY;
+import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader.TypeHierarchy.FLOAT_HIERARCHY;
+import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader.TypeHierarchy.INT_HIERARCHY;
+import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader.TypeHierarchy.LONG_HIERARCHY;
+import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader.TypeHierarchy.SHORT_HIERARCHY;
+import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader.TypeHierarchy.VOID_HIERARCHY;
 
 import java.io.IOException;
 import java.io.InputStream;

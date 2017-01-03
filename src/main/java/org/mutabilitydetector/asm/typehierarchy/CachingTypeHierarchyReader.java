@@ -1,4 +1,4 @@
-package org.mutabilitydetector.asm;
+package org.mutabilitydetector.asm.typehierarchy;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;

@@ -1,4 +1,4 @@
-package org.mutabilitydetector.asm;
+package org.mutabilitydetector.asm.typehierarchy;
 
 import org.objectweb.asm.Type;
 

@@ -1,6 +1,7 @@
-package org.mutabilitydetector.asm;
+package org.mutabilitydetector.asm.typehierarchy;
 
 import junit.framework.TestCase;
+import org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 

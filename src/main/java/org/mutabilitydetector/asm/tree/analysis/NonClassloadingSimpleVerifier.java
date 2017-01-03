@@ -28,8 +28,9 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.mutabilitydetector.asm;
+package org.mutabilitydetector.asm.tree.analysis;
 
+import org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.analysis.SimpleVerifier;
@@ -89,10 +90,10 @@ public class NonClassloadingSimpleVerifier extends SimpleVerifier {
         this(null, null, null, false, reader);
     }
 
-    public NonClassloadingSimpleVerifier(final Type currentClass,
-                                         final Type currentSuperClass,
-                                         final List<Type> currentClassInterfaces,
-                                         final boolean isInterface,
+    public NonClassloadingSimpleVerifier(Type currentClass,
+                                         Type currentSuperClass,
+                                         List<Type> currentClassInterfaces,
+                                         boolean isInterface,
                                          TypeHierarchyReader reader) {
         this.currentClass = currentClass;
         this.currentSuperClass = currentSuperClass;

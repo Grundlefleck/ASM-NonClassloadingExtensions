@@ -1,4 +1,4 @@
-package org.mutabilitydetector.asm;
+package org.mutabilitydetector.asm.typehierarchy;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -11,6 +11,8 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.mutabilitydetector.asm.typehierarchy.CachingTypeHierarchyReader;
+import org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader;
 import org.objectweb.asm.Type;
 
 public class CachingTypeHierarchyReaderTest extends TestCase {
