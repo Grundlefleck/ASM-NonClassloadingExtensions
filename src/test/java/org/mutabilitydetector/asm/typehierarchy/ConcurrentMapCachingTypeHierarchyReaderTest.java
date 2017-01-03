@@ -11,16 +11,14 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.mutabilitydetector.asm.typehierarchy.CachingTypeHierarchyReader;
-import org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader;
 import org.objectweb.asm.Type;
 
-public class CachingTypeHierarchyReaderTest extends TestCase {
+public class ConcurrentMapCachingTypeHierarchyReaderTest extends TestCase {
 
     private final TypeHierarchyReader baseReader = mock(TypeHierarchyReader.class);
     private final Type toType = Type.getType(List.class);
     private final Type fromType = Type.getType(ArrayList.class);
-    private final CachingTypeHierarchyReader reader = new CachingTypeHierarchyReader(baseReader);
+    private final ConcurrentMapCachingTypeHierarchyReader reader = new ConcurrentMapCachingTypeHierarchyReader(baseReader);
 
     public void testUsesUnderlyingReaderToCalculateTypeHierarchy() throws Exception {
         TypeHierarchyReader.TypeHierarchy fromTypeHierarchy = new TypeHierarchyReader.TypeHierarchy(fromType, toType, Collections.<Type>emptyList(), false);

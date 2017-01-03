@@ -1,25 +1,10 @@
-package org.mutabilitydetector.asm.typehierarchy;
+package org.mutabilitydetector.asm;
 
 import junit.framework.TestCase;
-import org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 
-public class TypeHierarchyReaderConsistentWithClassWriterTest extends TestCase {
-    
-    private final TypeHierarchyReader typeHierarchyReader = new TypeHierarchyReader();
-    private static class MoreVisibleGetCommonSuperclassClassWriter extends ClassWriter {
-
-        public MoreVisibleGetCommonSuperclassClassWriter() {
-            super(Opcodes.ASM5);
-        }
-
-        @Override
-        public String getCommonSuperClass(String type1, String type2) {
-            return super.getCommonSuperClass(type1, type2);
-        }
-    }
-    private final MoreVisibleGetCommonSuperclassClassWriter classWriter = new MoreVisibleGetCommonSuperclassClassWriter();
+public class NonClassloadingClassWriterCommonSuperClassTest extends TestCase {
 
     public void testGetCommonSuperClass_shouldBeObjectForUnrelatedClasses() throws Exception {
         assertCommonSuperclass(Object.class, Superclass.class, UnrelatedType.class);
@@ -49,16 +34,14 @@ public class TypeHierarchyReaderConsistentWithClassWriterTest extends TestCase {
         assertCommonSuperclass(Object.class, SubInterface.class, OtherSubInterface.class);
     }
 
-
-    
     private void assertCommonSuperclass(Class<?> expected, Class<?> first, Class<?> second) {
         String expectedType = slashedName(expected);
         String type1 = slashedName(first);
         String type2 = slashedName(second);
         assertEquals("Assertion is not consistent with ClassWriter.getCommonSuperClass",
-            expectedType, classWriter.getCommonSuperClass(type1, type2));
+            expectedType, new MoreVisibleClassWriter().getCommonSuperClass(type1, type2));
         assertEquals("TypeHierarchyReader is not consistent with ClassWriter.getCommonSuperClass",
-            expectedType, typeHierarchyReader.getCommonSuperClass(type1, type2));
+            expectedType, new MoreVisibleNonClassloadingClassWriter().getCommonSuperClass(type1, type2));
     }
 
     private String slashedName(Class<?> cls) {
@@ -81,4 +64,30 @@ public class TypeHierarchyReaderConsistentWithClassWriterTest extends TestCase {
     static class ImplementsSeveralInterfaces implements Interface, SubInterface { }
     static class AlsoImplementsSubInterface implements SubInterface { }
 
+
+    // extends ClassWriter in order to make getCommonSuperClass visible in test
+
+    private static class MoreVisibleNonClassloadingClassWriter extends NonClassloadingClassWriter {
+
+        MoreVisibleNonClassloadingClassWriter() {
+            super(Opcodes.ASM5);
+        }
+
+        @Override
+        public String getCommonSuperClass(String type1, String type2) {
+            return super.getCommonSuperClass(type1, type2);
+        }
+    }
+
+    private static class MoreVisibleClassWriter extends ClassWriter {
+
+        MoreVisibleClassWriter() {
+            super(Opcodes.ASM5);
+        }
+
+        @Override
+        public String getCommonSuperClass(String type1, String type2) {
+            return super.getCommonSuperClass(type1, type2);
+        }
+    }
 }

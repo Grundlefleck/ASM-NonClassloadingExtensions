@@ -121,26 +121,6 @@ public class TypeHierarchyReader {
         return hierarchyOf(to).isAssignableFrom(hierarchyOf(from), this);
     }
 
-    public String getCommonSuperClass(final String type1, final String type2) {
-        Type c = Type.getObjectType(type1);
-        Type d = Type.getObjectType(type2);
-
-        if (isAssignableFrom(c, d)) {
-            return type1;
-        }
-        if (isAssignableFrom(d, c)) {
-            return type2;
-        }
-        if (isInterface(c) || isInterface(d)) {
-            return "java/lang/Object";
-        } else {
-            do {
-                c = getSuperClass(c);
-            } while (!isAssignableFrom(c, d));
-            return c.getInternalName();
-        }
-    }
-
     /**
      * Obtains the {@link TypeHierarchy} for the given {@link Type} t. <br> This
      * method represents a suitable point for caching {@link TypeHierarchy}

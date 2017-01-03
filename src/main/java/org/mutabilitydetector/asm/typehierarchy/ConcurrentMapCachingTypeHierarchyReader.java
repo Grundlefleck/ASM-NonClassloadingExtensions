@@ -6,17 +6,17 @@ import java.util.concurrent.ConcurrentMap;
 import org.objectweb.asm.Type;
 
 
-public class CachingTypeHierarchyReader extends TypeHierarchyReader {
+public class ConcurrentMapCachingTypeHierarchyReader extends TypeHierarchyReader {
 
     private final TypeHierarchyReader baseReader;
     private final ConcurrentMap<Type, TypeHierarchy> typeHierarchyCache;
 
-    public CachingTypeHierarchyReader(TypeHierarchyReader baseReader, ConcurrentMap<Type, TypeHierarchy> initiallyEmptyCache) {
+    public ConcurrentMapCachingTypeHierarchyReader(TypeHierarchyReader baseReader, ConcurrentMap<Type, TypeHierarchy> initiallyEmptyCache) {
         this.baseReader = baseReader;
         this.typeHierarchyCache = initiallyEmptyCache;
     }
 
-    public CachingTypeHierarchyReader(TypeHierarchyReader baseReader) {
+    public ConcurrentMapCachingTypeHierarchyReader(TypeHierarchyReader baseReader) {
     	this(baseReader, new ConcurrentHashMap<Type, TypeHierarchy>());
     }
     
