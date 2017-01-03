@@ -64,7 +64,7 @@ public class NonClassloadingSimpleVerifierAssignabilityUnitTest extends TestCase
     public void testSuperclassIsAssignableFromSubclass() throws Exception {
         assertIsAssignableFrom(Superclass.class, Subclass.class);
     }
-    
+
     public void testIndirectSubclassIsAssignableToSuperclass() throws Exception {
         assertIsAssignableFrom(Superclass.class, SubSubclass.class);
     }
