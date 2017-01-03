@@ -20,15 +20,35 @@
 		</developer>
 	</developers>
 
+
+	<profiles>
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<asm.version>5.0.3</asm.version>
+			</properties>
+		</profile>
+		<profile>
+			<id>latest-asm</id>
+			<properties>
+				<asm.version>6.0_ALPHA</asm.version> <!-- newest at the time -->
+			</properties>
+		</profile>
+	</profiles>
+
 	<reporting>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>2.3.3</version>
+				<version>2.4.0</version>
 			</plugin>
 		</plugins>
 	</reporting>
+
 
 	<build>
 
@@ -57,8 +77,6 @@
 		</plugins>
 	</build>
 
-
-
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -69,7 +87,7 @@
 		<dependency>
 			<groupId>org.ow2.asm</groupId>
 			<artifactId>asm-debug-all</artifactId>
-			<version>5.0.3</version>
+			<version>${asm.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
