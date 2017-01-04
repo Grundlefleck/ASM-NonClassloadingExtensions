@@ -3,7 +3,7 @@
 	<groupId>org.mutabilitydetector</groupId>
 	<artifactId>asm-nonclassloadingextensions</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0-rc1</version>
+	<version>1.0-rc1-SNAPSHOT</version>
 	<name>asm-nonclassloadingextensions</name>
 	<url>https://github.com/Grundlefleck/ASM-NonClassloadingExtensions</url>
 
