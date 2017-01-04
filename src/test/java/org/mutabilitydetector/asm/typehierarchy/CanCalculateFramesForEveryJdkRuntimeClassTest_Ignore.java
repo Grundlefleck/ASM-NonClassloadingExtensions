@@ -24,7 +24,7 @@ import java.util.Set;
 import static com.google.classpath.RegExpResourceFilter.ANY;
 import static com.google.classpath.RegExpResourceFilter.ENDS_WITH_CLASS;
 
-public class CanCalculateFramesForEveryJdkRuntimeClassTest extends TestCase {
+public class CanCalculateFramesForEveryJdkRuntimeClassTest_Ignore extends TestCase {
 
     private ClassPath classPath = new ClassPathFactory().createFromPath(System.getProperty("java.home") + "/lib/rt.jar");
     private RegExpResourceFilter regExpResourceFilter = new RegExpResourceFilter(ANY, ENDS_WITH_CLASS);
