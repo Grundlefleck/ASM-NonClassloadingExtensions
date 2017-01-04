@@ -39,7 +39,7 @@ Then ASM-NonClassloadingExtensions may help you.
 
 Disclaimer: if all you need to know is the immediate superclass or interfaces of a type, or if the class is an interface, that's already trivial with ASM, you probably don't need another library for that. However, the implementation of `TypeHierarchyReader#obtainHierarchyOf(type)` can show you how to do it.
 
-
+[![Build Status](https://api.travis-ci.org/Grundlefleck/ASM-NonClassloadingExtensions.png?branch=master)](https://travis-ci.org/Grundlefleck/ASM-NonClassloadingExtensions)
 
 
 
