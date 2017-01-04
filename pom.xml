@@ -8,6 +8,12 @@
 	<name>asm-nonclassloadingextensions</name>
 	<url>https://github.com/Grundlefleck/ASM-NonClassloadingExtensions</url>
 
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
