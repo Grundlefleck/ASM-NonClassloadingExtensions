@@ -21,8 +21,8 @@ public class ConcurrentMapCachingTypeHierarchyReaderTest extends TestCase {
     private final ConcurrentMapCachingTypeHierarchyReader reader = new ConcurrentMapCachingTypeHierarchyReader(baseReader);
 
     public void testUsesUnderlyingReaderToCalculateTypeHierarchy() throws Exception {
-        TypeHierarchyReader.TypeHierarchy fromTypeHierarchy = new TypeHierarchyReader.TypeHierarchy(fromType, toType, Collections.<Type>emptyList(), false);
-        TypeHierarchyReader.TypeHierarchy toTypeHierarchy = new TypeHierarchyReader.TypeHierarchy(toType, null, Collections.<Type>emptyList(), true);
+        TypeHierarchy fromTypeHierarchy = new TypeHierarchy(fromType, toType, Collections.<Type>emptyList(), false);
+        TypeHierarchy toTypeHierarchy = new TypeHierarchy(toType, null, Collections.<Type>emptyList(), true);
 
         when(baseReader.hierarchyOf(fromType)).thenReturn(fromTypeHierarchy);
         when(baseReader.hierarchyOf(toType)).thenReturn(toTypeHierarchy);
@@ -32,7 +32,7 @@ public class ConcurrentMapCachingTypeHierarchyReaderTest extends TestCase {
     }
 
     public void testCachesReturnValueOfUnderlyingReader() throws Exception {
-        TypeHierarchyReader.TypeHierarchy fromTypeHierarchy = new TypeHierarchyReader.TypeHierarchy(fromType, toType, Collections.<Type>emptyList(), false);
+        TypeHierarchy fromTypeHierarchy = new TypeHierarchy(fromType, toType, Collections.<Type>emptyList(), false);
         
         when(baseReader.hierarchyOf(fromType)).thenReturn(fromTypeHierarchy);
         
@@ -43,14 +43,14 @@ public class ConcurrentMapCachingTypeHierarchyReaderTest extends TestCase {
     }
     
     public void testUsesUnderlyingReaderToCalculateIsInterface() throws Exception {
-        TypeHierarchyReader.TypeHierarchy anInterfaceType = new TypeHierarchyReader.TypeHierarchy(toType, null, Collections.<Type>emptyList(), true);
+        TypeHierarchy anInterfaceType = new TypeHierarchy(toType, null, Collections.<Type>emptyList(), true);
         when(baseReader.hierarchyOf(toType)).thenReturn(anInterfaceType);
 
         assertTrue(reader.isInterface(toType));
     }
     
     public void testUsesUnderlyingReaderToGetSuperClass() throws Exception {
-        TypeHierarchyReader.TypeHierarchy typeHierarchy = new TypeHierarchyReader.TypeHierarchy(fromType, toType, Collections.<Type>emptyList(), true);
+        TypeHierarchy typeHierarchy = new TypeHierarchy(fromType, toType, Collections.<Type>emptyList(), true);
         when(baseReader.hierarchyOf(fromType)).thenReturn(typeHierarchy);
             
         assertEquals(toType, reader.getSuperClass(fromType));

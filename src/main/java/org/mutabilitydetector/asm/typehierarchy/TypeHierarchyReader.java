@@ -30,25 +30,21 @@
 
 package org.mutabilitydetector.asm.typehierarchy;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.unmodifiableList;
 import static org.objectweb.asm.Opcodes.ACC_INTERFACE;
 import static org.objectweb.asm.Type.getType;
-import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader.TypeHierarchy.BOOLEAN_HIERARCHY;
-import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader.TypeHierarchy.BYTE_HIERARCHY;
-import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader.TypeHierarchy.CHAR_HIERARCHY;
-import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader.TypeHierarchy.DOUBLE_HIERARCHY;
-import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader.TypeHierarchy.FLOAT_HIERARCHY;
-import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader.TypeHierarchy.INT_HIERARCHY;
-import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader.TypeHierarchy.LONG_HIERARCHY;
-import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader.TypeHierarchy.SHORT_HIERARCHY;
-import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader.TypeHierarchy.VOID_HIERARCHY;
+import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchy.BOOLEAN_HIERARCHY;
+import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchy.BYTE_HIERARCHY;
+import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchy.CHAR_HIERARCHY;
+import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchy.DOUBLE_HIERARCHY;
+import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchy.FLOAT_HIERARCHY;
+import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchy.INT_HIERARCHY;
+import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchy.LONG_HIERARCHY;
+import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchy.SHORT_HIERARCHY;
+import static org.mutabilitydetector.asm.typehierarchy.TypeHierarchy.VOID_HIERARCHY;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.objectweb.asm.ClassReader;
@@ -122,9 +118,9 @@ public class TypeHierarchyReader {
     }
 
     /**
-     * Obtains the {@link TypeHierarchy} for the given {@link Type} t. <br> This
-     * method represents a suitable point for caching {@link TypeHierarchy}
-     * results.
+     * Obtains the {@link TypeHierarchy} for the given {@link Type} t.
+     * <br>
+     * This method represents a suitable point for caching {@link TypeHierarchy} results.
      */
     public TypeHierarchy hierarchyOf(Type t) {
         try {
@@ -192,224 +188,6 @@ public class TypeHierarchyReader {
             interfaceTypes[i] = Type.getObjectType(interfaces[i]);
         }
         return Arrays.asList(interfaceTypes);
-    }
-
-    public static class TypeHierarchy {
-
-        private static final List<Type> IMPLEMENTS_NO_INTERFACES = Collections.emptyList();
-        private static final List<Type> IMPLICIT_ARRAY_INTERFACES = unmodifiableList(
-                asList(getType(Cloneable.class), getType(Serializable.class)));
-        public static final TypeHierarchy JAVA_LANG_OBJECT = new TypeHierarchy(Type.getType(Object.class),
-                null,
-                IMPLEMENTS_NO_INTERFACES,
-                false);
-
-        public static final TypeHierarchy BOOLEAN_HIERARCHY = typeHierarchyForPrimitiveType(Type.BOOLEAN_TYPE);
-        public static final TypeHierarchy BYTE_HIERARCHY = typeHierarchyForPrimitiveType(Type.BYTE_TYPE);
-        public static final TypeHierarchy CHAR_HIERARCHY = typeHierarchyForPrimitiveType(Type.CHAR_TYPE);
-        public static final TypeHierarchy SHORT_HIERARCHY = typeHierarchyForPrimitiveType(Type.SHORT_TYPE);
-        public static final TypeHierarchy INT_HIERARCHY = typeHierarchyForPrimitiveType(Type.INT_TYPE);
-        public static final TypeHierarchy LONG_HIERARCHY = typeHierarchyForPrimitiveType(Type.LONG_TYPE);
-        public static final TypeHierarchy FLOAT_HIERARCHY = typeHierarchyForPrimitiveType(Type.FLOAT_TYPE);
-        public static final TypeHierarchy DOUBLE_HIERARCHY = typeHierarchyForPrimitiveType(Type.DOUBLE_TYPE);
-        public static final TypeHierarchy VOID_HIERARCHY = typeHierarchyForPrimitiveType(Type.VOID_TYPE);
-        
-        static TypeHierarchy hierarchyForArrayOfType(Type t) {
-            return new TypeHierarchy(t, JAVA_LANG_OBJECT.type(), IMPLICIT_ARRAY_INTERFACES, false);
-        }
-
-
-        private static TypeHierarchy typeHierarchyForPrimitiveType(Type primitiveType) {
-            return new TypeHierarchy(primitiveType, null, IMPLEMENTS_NO_INTERFACES, false);
-        }
-
-        private final Type thisType;
-        private final Type superClass;
-        private final List<Type> interfaces;
-        private final boolean isInterface;
-
-        public TypeHierarchy(
-            Type thisType,
-            Type superClass,
-            List<Type> interfaces,
-            boolean isInterface)
-        {
-            this.thisType = thisType;
-            this.superClass = superClass;
-            this.interfaces = interfaces;
-            this.isInterface = isInterface;
-        }
-
-        public Type type() {
-            return thisType;
-        }
-
-        public boolean representsType(Type t) {
-            return t.equals(thisType);
-        }
-
-        public boolean isInterface() {
-            return isInterface;
-        }
-
-        public Type getSuperClass() {
-            return superClass;
-        }
-
-        public boolean isAssignableFrom(
-            TypeHierarchy u,
-            TypeHierarchyReader typeHierarchyReader)
-        {
-            if (assigningToObject()) {
-                return true;
-            }
-
-            if (this.isSameType(u)) {
-                return true;
-            } else if (this.isSuperTypeOf(u)) {
-                return true;
-            } else if (this.isInterfaceImplementedBy(u)) {
-                return true;
-            } else if (bothAreArrayTypes(u) && haveSameDimensionality(u)) {
-                return (JAVA_LANG_OBJECT.representsType(typeOfArray()) && u.isReferenceArrayType())
-                    || arrayTypeIsAssignableFrom(u, typeHierarchyReader);
-            } else if (bothAreArrayTypes(u)
-                    && isObjectArrayWithSmallerDimensionalityThan(u))
-            {
-                return true;
-            } else if (u.extendsObject() && !u.implementsAnyInterfaces()) {
-                return false;
-            }
-
-            if (u.hasSuperType()
-                    && isAssignableFrom(u.getSuperClass(), typeHierarchyReader))
-            {
-                return true;
-            } else if (u.implementsAnyInterfaces()
-                    && isAssignableFromAnyInterfaceImplementedBy(u,
-                            typeHierarchyReader))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        public boolean isAssignableFrom(Type type, TypeHierarchyReader reader) {
-            return isAssignableFrom(reader.hierarchyOf(type), reader);
-        }
-
-        private boolean isAssignableFromAnyInterfaceImplementedBy(
-            TypeHierarchy u,
-            TypeHierarchyReader typeHierarchyReader)
-        {
-            for (Type ui : u.interfaces) {
-                if (isAssignableFrom(ui, typeHierarchyReader)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private boolean haveSameDimensionality(TypeHierarchy u) {
-            return arrayDimensionality() == u.arrayDimensionality();
-        }
-
-        private boolean isObjectArrayWithSmallerDimensionalityThan(
-            TypeHierarchy u)
-        {
-            return JAVA_LANG_OBJECT.representsType(typeOfArray())
-                    && arrayDimensionality() <= u.arrayDimensionality();
-        }
-
-        private boolean arrayTypeIsAssignableFrom(
-            TypeHierarchy u,
-            TypeHierarchyReader reader)
-        {
-
-            TypeHierarchy thisArrayType = reader.hierarchyOf(typeOfArray());
-            return typeOfArray().getSort() == u.typeOfArray().getSort()
-                && thisArrayType.isAssignableFrom(reader.hierarchyOf(u.typeOfArray()), reader);
-        }
-
-        private boolean bothAreArrayTypes(TypeHierarchy u) {
-            return this.isArrayType() && u.isArrayType();
-        }
-
-        private Type typeOfArray() {
-            return Type.getType(thisType.getInternalName()
-                    .substring(thisType.getDimensions()));
-        }
-
-        private int arrayDimensionality() {
-            return thisType.getDimensions();
-        }
-
-        private boolean isArrayType() {
-            return thisType.getSort() == Type.ARRAY;
-        }
-
-        private boolean isReferenceArrayType() {
-            return isArrayType() && typeOfArray().getSort() == Type.OBJECT;
-        }
-
-        private boolean isInterfaceImplementedBy(TypeHierarchy u) {
-            return u.interfaces.contains(type());
-        }
-
-        private boolean isSuperTypeOf(TypeHierarchy u) {
-            return type().equals(u.getSuperClass());
-        }
-
-        private boolean hasSuperType() {
-            return getSuperClass() != null
-                    && !JAVA_LANG_OBJECT.representsType(getSuperClass());
-        }
-
-        private boolean implementsAnyInterfaces() {
-            return !interfaces.isEmpty();
-        }
-
-        private boolean extendsObject() {
-            return getSuperClass() != null
-                    && JAVA_LANG_OBJECT.representsType(getSuperClass());
-        }
-
-        private boolean isSameType(TypeHierarchy u) {
-            return u.type().equals(type());
-        }
-
-        private boolean assigningToObject() {
-            return JAVA_LANG_OBJECT.representsType(type());
-        }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            return prime * thisType.hashCode();
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            } else if (obj == null) {
-                return false;
-            } else if (getClass() != obj.getClass()) {
-                return false;
-            }
-
-            TypeHierarchy other = (TypeHierarchy) obj;
-            return thisType.equals(other.thisType);
-        }
-
-        @Override
-        public String toString() {
-            return String.format("%s [type=%s]",
-                    getClass().getSimpleName(),
-                    thisType.toString());
-        }
-
     }
 
 }

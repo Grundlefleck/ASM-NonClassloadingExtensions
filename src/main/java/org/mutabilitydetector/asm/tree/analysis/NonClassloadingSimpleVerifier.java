@@ -30,6 +30,7 @@
 
 package org.mutabilitydetector.asm.tree.analysis;
 
+import org.mutabilitydetector.asm.typehierarchy.TypeHierarchy;
 import org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
@@ -179,9 +180,9 @@ public class NonClassloadingSimpleVerifier extends SimpleVerifier {
             return false;
         }
 
-        TypeHierarchyReader.TypeHierarchy tc = typeHierarchyReader.hierarchyOf(toType);
+        TypeHierarchy tc = typeHierarchyReader.hierarchyOf(toType);
         if (tc.isInterface()) {
-            tc = TypeHierarchyReader.TypeHierarchy.JAVA_LANG_OBJECT;
+            tc = TypeHierarchy.JAVA_LANG_OBJECT;
         }
         return tc.isAssignableFrom(fromType, typeHierarchyReader);
     }
