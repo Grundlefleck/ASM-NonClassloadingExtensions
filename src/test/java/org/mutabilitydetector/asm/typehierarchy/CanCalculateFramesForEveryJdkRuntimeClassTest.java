@@ -33,19 +33,19 @@ public class CanCalculateFramesForEveryJdkRuntimeClassTest extends TestCase {
         new NonClassloadingSimpleVerifier());
 
 
-    public void ignore_testWithClassesBeingLoadedWithSimpleVerifier() throws Exception {
+    public void testWithClassesBeingLoadedWithSimpleVerifier() throws Exception {
         for (String resourcePath: findResources) {
             new ClassReader(ClassLoader.getSystemResourceAsStream(resourcePath)).accept(new DelegatesToMethodVisitor(new SimpleVerifier()), 0);
         }
     }
 
-    public void ignore_testWithoutLoadingClasses() throws Exception {
+    public void testWithoutLoadingClasses() throws Exception {
         for (String resourcePath: findResources) {
             new ClassReader(ClassLoader.getSystemResourceAsStream(resourcePath)).accept(new DelegatesToMethodVisitor(new NonClassloadingSimpleVerifier()), 0);
         }
     }
 
-    public void ignore_testThereAreNoDifferences() throws Exception {
+    public void testThereAreNoDifferences() throws Exception {
         for (String resourcePath: findResources) {
             new ClassReader(ClassLoader.getSystemResourceAsStream(resourcePath)).accept(new DelegatesToMethodVisitor(verifier), 0);
         }
@@ -53,7 +53,7 @@ public class CanCalculateFramesForEveryJdkRuntimeClassTest extends TestCase {
         assertNoDifferences(verifier.differences);
     }
 
-    public void ignore_testFailingClass() throws Exception {
+    public void testFailingClass() throws Exception {
         verifier.isAssignableFrom(Type.getType("[Ljava/lang/Object;"), Type.getType("[Z"));
         assertNoDifferences(verifier.differences);
     }
