@@ -143,6 +143,7 @@ public class CanCalculateFramesForEveryJdkRuntimeClassTest extends TestCase {
         private Set<Difference> differences = new HashSet<Difference>();
 
         IsAssignableDifferencesVerifier(NonClassloadingSimpleVerifier nonClassloadingSimpleVerifier) {
+            super(ASM5, null, null, null, false);
             this.nonClassloadingSimpleVerifier = nonClassloadingSimpleVerifier;
         }
 

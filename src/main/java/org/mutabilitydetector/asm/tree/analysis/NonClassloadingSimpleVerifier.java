@@ -34,6 +34,7 @@ import org.mutabilitydetector.asm.typehierarchy.TypeHierarchy;
 import org.mutabilitydetector.asm.typehierarchy.TypeHierarchyReader;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.SimpleVerifier;
 
 import java.util.List;
@@ -96,6 +97,7 @@ public class NonClassloadingSimpleVerifier extends SimpleVerifier {
                                          List<Type> currentClassInterfaces,
                                          boolean isInterface,
                                          TypeHierarchyReader reader) {
+        super(ASM7, currentClass, currentSuperClass, currentClassInterfaces, isInterface);
         this.currentClass = currentClass;
         this.currentSuperClass = currentSuperClass;
         this.currentClassInterfaces = currentClassInterfaces;
@@ -165,14 +167,14 @@ public class NonClassloadingSimpleVerifier extends SimpleVerifier {
                 return isAssignableFrom(toType, getSuperClass(fromType));
             }
         }
+
         if (currentClass != null && fromType.equals(currentClass)) {
             if (isAssignableFrom(toType, currentSuperClass)) {
                 return true;
             }
             if (currentClassInterfaces != null) {
-                for (int i = 0; i < currentClassInterfaces.size(); ++i) {
-                    Type v = currentClassInterfaces.get(i);
-                    if (isAssignableFrom(toType, v)) {
+                for (Type currentClassInterface : currentClassInterfaces) {
+                    if (isAssignableFrom(toType, currentClassInterface)) {
                         return true;
                     }
                 }
@@ -181,9 +183,40 @@ public class NonClassloadingSimpleVerifier extends SimpleVerifier {
         }
 
         TypeHierarchy tc = typeHierarchyReader.hierarchyOf(toType);
-        if (tc.isInterface()) {
-            tc = TypeHierarchy.JAVA_LANG_OBJECT;
-        }
         return tc.isAssignableFrom(fromType, typeHierarchyReader);
+    }
+
+    @Override
+    protected boolean isSubTypeOf(final BasicValue value, final BasicValue expected) {
+        Type expectedType = expected.getType();
+        Type type = value.getType();
+        switch (expectedType.getSort()) {
+            case Type.INT:
+            case Type.FLOAT:
+            case Type.LONG:
+            case Type.DOUBLE:
+                return type.equals(expectedType);
+            case Type.ARRAY:
+            case Type.OBJECT:
+                if (type.equals(NULL_TYPE)) {
+                    return true;
+                } else if (type.getSort() == Type.OBJECT || type.getSort() == Type.ARRAY) {
+                    if (isAssignableFrom(expectedType, type)) {
+                        return true;
+                    } else if (isInterface(expectedType)) {
+                        // The merge of class or interface types can only yield class types (because it is not
+                        // possible in general to find an unambiguous common super interface, due to multiple
+                        // inheritance). Because of this limitation, we need to relax the subtyping check here
+                        // if 'value' is an interface.
+                        return isAssignableFrom(TypeHierarchy.JAVA_LANG_OBJECT.type(), type);
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            default:
+                throw new AssertionError();
+        }
     }
 }

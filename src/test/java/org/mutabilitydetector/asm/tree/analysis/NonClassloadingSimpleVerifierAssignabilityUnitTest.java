@@ -1,12 +1,12 @@
 package org.mutabilitydetector.asm.tree.analysis;
 
 import junit.framework.TestCase;
-import org.mutabilitydetector.asm.tree.analysis.NonClassloadingSimpleVerifier;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.SimpleVerifier;
 
 import java.io.Serializable;
+import java.util.List;
 
 import static org.objectweb.asm.Type.getType;
 
@@ -14,7 +14,12 @@ import static org.objectweb.asm.Type.getType;
 public class NonClassloadingSimpleVerifierAssignabilityUnitTest extends TestCase {
     
     private final NonClassloadingSimpleVerifier nonClassloadingSimpleVerifier = new NonClassloadingSimpleVerifier();
-    private static final class MoreVisibleSimpleVerifier extends SimpleVerifier {
+
+    private static final class MakeMethodsVisibleSimpleVerifier extends SimpleVerifier {
+        MakeMethodsVisibleSimpleVerifier() {
+            super(ASM5, null, null, null, false);
+        }
+
         @Override
         protected boolean isAssignableFrom(Type t, Type u) {
             return super.isAssignableFrom(t, u);
@@ -25,7 +30,8 @@ public class NonClassloadingSimpleVerifierAssignabilityUnitTest extends TestCase
             return super.getSuperClass(t);
         }
     }
-    private final MoreVisibleSimpleVerifier simpleVerifier = new MoreVisibleSimpleVerifier();
+
+    private MakeMethodsVisibleSimpleVerifier simpleVerifier = new MakeMethodsVisibleSimpleVerifier();
 
     public void testSuperClassOfObjectIsNull() {
         assertSuperClass(null, Object.class);
@@ -88,8 +94,11 @@ public class NonClassloadingSimpleVerifierAssignabilityUnitTest extends TestCase
     }
     
     public void testSuperInterfaceIsAssignableFromSubInterface() throws Exception {
+        SuperInterface superInterface = null;
+        SubInterface subInterface = null;
+
         assertIsAssignableFrom(SuperInterface.class, SubInterface.class);
-        assertIsAssignableFrom(SubInterface.class, SuperInterface.class);
+        assertIsNotAssignableFrom(SubInterface.class, SuperInterface.class);
     }
     
     public void testImplementingClassIsNotAssignableFromInterface() throws Exception {
@@ -136,12 +145,12 @@ public class NonClassloadingSimpleVerifierAssignabilityUnitTest extends TestCase
         assertIsAssignableFrom(Object.class, Interface[].class);
         assertIsAssignableFrom(Object[].class, Interface[][].class);
         assertIsAssignableFrom(Object[][].class, Interface[][].class);
-        assertIsAssignableFrom(Interface.class, Interface[].class);
+        assertIsNotAssignableFrom(Interface.class, Interface[].class);
         assertIsNotAssignableFrom(Interface[].class, Interface.class);
         assertIsNotAssignableFrom(Interface[].class, Interface[][].class);
         assertIsNotAssignableFrom(Interface[][].class, Interface[].class);
     }
-    
+
     public void testAnonymousInnerClasses() throws Exception {
         assertIsAssignableFrom(Interface.class, new Interface() { }.getClass());
         assertIsNotAssignableFrom(new Interface() { }.getClass(), Interface.class);
@@ -178,8 +187,8 @@ public class NonClassloadingSimpleVerifierAssignabilityUnitTest extends TestCase
     }
 
     public void testMergingUnrelatedInterfaceTypesResultsInObjectBasicValue() {
-        assertMergeResult(Interface.class, Interface.class, OtherInterface.class);
-        assertMergeResult(OtherInterface.class, OtherInterface.class, Interface.class);
+        assertMergeResult(Object.class, Interface.class, OtherInterface.class);
+        assertMergeResult(Object.class, OtherInterface.class, Interface.class);
     }
 
     public void testMergingObjectArrayTypesResultsInObjectArrayBasicValue() {
@@ -192,8 +201,8 @@ public class NonClassloadingSimpleVerifierAssignabilityUnitTest extends TestCase
     }
 
     public void testMergingInterfaceArrayTypeAndUnrelatedInterfaceArrayTypeResultsInObjectArrayBasicValue() {
-        assertMergeResult(Object.class, Interface[].class, OtherInterface[].class);
-        assertMergeResult(Object.class, Superclass[].class, Interface[].class);
+        assertMergeResult(Object[].class, Interface[].class, OtherInterface[].class);
+        assertMergeResult(Object[].class, Superclass[].class, Interface[].class);
     }
 
     public void testMergingSuperclassAndSubclassResultsInSuperclassBasicValue() {
@@ -208,12 +217,14 @@ public class NonClassloadingSimpleVerifierAssignabilityUnitTest extends TestCase
     public void testMergingMultidimensionalArray() {
         assertMergeResult(Superclass[][].class, Superclass[][].class, Subclass[][].class);
     }
-    
+
     private void assertMergeResult(Class<?> expected, Class<?> first, Class<?> second) {
         BasicValue expectedBasicValue = new BasicValue(getType(expected));
 
+        MakeMethodsVisibleSimpleVerifier moreVisibleSimpleVerifier = simpleVerifier;
+
         assertEquals("Assertion is not consistent with SimpleVerifier.merge",
-                expectedBasicValue, simpleVerifier.merge(new BasicValue(getType(first)), new BasicValue(getType(second))));
+                expectedBasicValue, moreVisibleSimpleVerifier.merge(new BasicValue(getType(first)), new BasicValue(getType(second))));
         assertEquals("Verifier produced incorrect merge result.",
                 expectedBasicValue, nonClassloadingSimpleVerifier.merge(new BasicValue(getType(first)), new BasicValue(getType(second))));
     }
@@ -253,14 +264,14 @@ public class NonClassloadingSimpleVerifierAssignabilityUnitTest extends TestCase
     public static class OtherSubclass extends Superclass { }
     public static class SubSubclass extends Subclass { }
     
-    public static interface Interface { }
-    public static interface OtherInterface { }
+    public interface Interface { }
+    public interface OtherInterface { }
     public static class ImplementsInterface implements Interface { }
     public static class ExtendsImplementsInterface extends ImplementsInterface { }
     
-    public static interface SuperInterface { }
-    public static interface SubInterface extends SuperInterface { }
-    public static interface OtherSubInterface { }
+    public interface SuperInterface { }
+    public interface SubInterface extends SuperInterface { }
+    public interface OtherSubInterface { }
     
     public static class ImplementsSeveralInterfaces implements Interface, SubInterface { }
     public static class OtherImplementsInterface implements Interface { }
