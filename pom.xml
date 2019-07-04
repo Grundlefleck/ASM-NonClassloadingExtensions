@@ -38,7 +38,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<findbugs.plugin.version>3.0.4</findbugs.plugin.version>
+		<findbugs.plugin.version>3.0.5</findbugs.plugin.version>
 	</properties>
 
 	<reporting>
@@ -88,7 +88,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>findbugs-maven-plugin</artifactId>
-					<version>2.4.0</version>
+					<version>3.0.5</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
