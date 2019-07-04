@@ -68,6 +68,12 @@
 			</properties>
 		</profile>
 		<profile>
+			<id>jdk10</id>
+			<properties>
+				<java.version>10</java.version>
+			</properties>
+		</profile>
+		<profile>
 			<id>jdk11</id>
 			<properties>
 				<java.version>11</java.version>
