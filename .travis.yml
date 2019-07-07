@@ -8,7 +8,7 @@ matrix:
       env: MVN_PROFILE=jdk10
     - jdk: openjdk11
       env: MVN_PROFILE=jdk11
-script: "mvn install -P ${MVN_PROFILE}"
+script: "mvn install -P ${MVN_PROFILE} -Dmaven.javadoc.skip=true"
 
 # Fix OpenJDK build. Issue: https://github.com/travis-ci/travis-ci/issues/5227 
 addons:
