@@ -3,7 +3,7 @@
 	<groupId>org.mutabilitydetector</groupId>
 	<artifactId>asm-nonclassloadingextensions</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0-rc2</version>
+	<version>1.0-rc3-SNAPSHOT</version>
 	<name>asm-nonclassloadingextensions</name>
 	<description>Provides non-classloading alternatives to implementations within ObjectWeb ASM.</description>
 	<url>https://github.com/Grundlefleck/ASM-NonClassloadingExtensions</url>
@@ -19,7 +19,7 @@
 		<url>https://github.com/Grundlefleck/ASM-NonClassloadingExtensions</url>
 		<connection>scm:git:https://github.com/Grundlefleck/ASM-NonClassloadingExtensions</connection>
 		<developerConnection>scm:git:git@github.com:Grundlefleck/ASM-NonClassloadingExtensions.git</developerConnection>
-	  <tag>asm-nonclassloadingextensions-1.0-rc2</tag>
+	  <tag>HEAD</tag>
   </scm>
 
 	<developers>
