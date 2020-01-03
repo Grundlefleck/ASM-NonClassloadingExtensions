@@ -4,6 +4,7 @@ matrix:
   include:
     - jdk: oraclejdk8
       env: MVN_PROFILE=jdk8
+      dist: trusty
     - jdk: openjdk10
       env: MVN_PROFILE=jdk10
     - jdk: openjdk11
