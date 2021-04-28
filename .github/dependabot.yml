@@ -1,0 +1,25 @@
+version: 2
+updates:
+- package-ecosystem: maven
+  directory: "/"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: org.ow2.asm:asm
+    versions:
+    - "> 7.0, < 8"
+  - dependency-name: org.ow2.asm:asm-analysis
+    versions:
+    - "> 7.0, < 8"
+  - dependency-name: com.github.spotbugs:spotbugs-maven-plugin
+    versions:
+    - 4.2.0
+    - 4.2.2
+  - dependency-name: org.mockito:mockito-core
+    versions:
+    - 3.7.7
+    - 3.8.0
+  - dependency-name: org.ow2.asm:asm
+    versions:
+    - "9.0"
